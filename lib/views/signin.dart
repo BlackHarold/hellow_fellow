@@ -1,13 +1,63 @@
+import 'package:email_validator/email_validator.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:hello_fellow/main.dart';
+import 'package:hello_fellow/services/auth.dart';
 import 'package:hello_fellow/widgets/app_bar_widget.dart';
 
+import 'chatroom.dart';
+
 class SignIn extends StatefulWidget {
+  final Function toggle;
+
+  SignIn(this.toggle);
+
   @override
   _SignInState createState() => _SignInState();
 }
 
 class _SignInState extends State<SignIn> {
+  bool isLoading = false;
+
+  TextEditingController emailTextEditingController =
+      new TextEditingController();
+  TextEditingController passwordTextEditingController =
+      new TextEditingController();
+  AuthMethods authMethods = new AuthMethods();
+
+  final formKey = GlobalKey<FormState>();
+
+  signInButtonPressed() {
+    FutureBuilder(
+      future: Firebase.initializeApp(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          print('error');
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          print("state done");
+        }
+        return null;
+      },
+    );
+
+    if (formKey.currentState.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+
+      authMethods
+          .signUpWithEmailAndPassword(emailTextEditingController.text,
+              passwordTextEditingController.text)
+          .then((value) {
+        print('authorization method value: $value');
+
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatRoom(),
+            ));
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,11 +71,25 @@ class _SignInState extends State<SignIn> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(
+              TextFormField(
+                validator: (val) {
+                  //bad request: RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-\/=?^_'{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+                  return EmailValidator.validate(val)
+                      ? null
+                      : 'Please enter a valid email';
+                },
+                controller: emailTextEditingController,
                 style: whiteTextStyle(),
                 decoration: textFieldInputDecoration('email'),
               ),
-              TextField(
+              TextFormField(
+                obscureText: true,
+                validator: (val) {
+                  return val.length > 6
+                      ? null
+                      : "Please provide password more than 6 characters";
+                },
+                controller: passwordTextEditingController,
                 style: whiteTextStyle(),
                 decoration: textFieldInputDecoration('password'),
               ),
@@ -43,16 +107,21 @@ class _SignInState extends State<SignIn> {
                 ),
               ),
               SizedBox(height: 8),
-              Container(
-                alignment: Alignment.center,
-                width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(vertical: 20),
-                decoration: BoxDecoration(
-                    gradient: gradientButton(),
-                    borderRadius: BorderRadius.circular(30.0)),
-                child: Text(
-                  'Sing In',
-                  style: whiteTextStyleWithSize(18.0),
+              GestureDetector(
+                onTap: () {
+                  signInButtonPressed();
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  decoration: BoxDecoration(
+                      gradient: gradientButton(),
+                      borderRadius: BorderRadius.circular(30.0)),
+                  child: Text(
+                    'Sing In',
+                    style: whiteTextStyleWithSize(18.0),
+                  ),
                 ),
               ),
               SizedBox(height: 8),
@@ -76,12 +145,20 @@ class _SignInState extends State<SignIn> {
                     'Don\'t have account? ',
                     style: whiteTextStyle(),
                   ),
-                  Text(
-                    'Register now',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14.0,
-                      decoration: TextDecoration.underline,
+                  GestureDetector(
+                    onTap: () {
+                      widget.toggle();
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        'Register now',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14.0,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
                     ),
                   )
                 ],

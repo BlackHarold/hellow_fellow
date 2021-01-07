@@ -2,11 +2,14 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_fellow/services/auth.dart';
+import 'package:hello_fellow/views/chatroom.dart';
 import 'package:hello_fellow/widgets/app_bar_widget.dart';
 
-import '../main.dart';
-
 class SignUp extends StatefulWidget {
+  final Function toggle;
+
+  SignUp(this.toggle);
+
   @override
   _SignUpState createState() => _SignUpState();
 }
@@ -47,7 +50,13 @@ class _SignUpState extends State<SignUp> {
           .signUpWithEmailAndPassword(emailTextEditingController.text,
               passwordTextEditingController.text)
           .then((value) {
-        print('$value');
+        print('authorization method value: $value');
+
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatRoom(),
+            ));
       });
     }
   }
@@ -169,12 +178,20 @@ class _SignUpState extends State<SignUp> {
                             'Already have account? ',
                             style: whiteTextStyle(),
                           ),
-                          Text(
-                            'SignIn now',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14.0,
-                              decoration: TextDecoration.underline,
+                          GestureDetector(
+                            onTap: () {
+                              widget.toggle();
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                'SignIn now',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14.0,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
                             ),
                           )
                         ],
