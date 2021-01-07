@@ -1,0 +1,96 @@
+import 'package:flutter/material.dart';
+import 'package:hello_fellow/main.dart';
+import 'package:hello_fellow/widgets/app_bar_widget.dart';
+
+class SignIn extends StatefulWidget {
+  @override
+  _SignInState createState() => _SignInState();
+}
+
+class _SignInState extends State<SignIn> {
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: appBarMain(context),
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          alignment: Alignment.bottomCenter,
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                style: whiteTextStyle(),
+                decoration: textFieldInputDecoration('email'),
+              ),
+              TextField(
+                style: whiteTextStyle(),
+                decoration: textFieldInputDecoration('password'),
+              ),
+              SizedBox(height: 8),
+              Container(
+                // Padding(
+                // padding: const EdgeInsets.only(left: 200),
+                alignment: Alignment.centerRight,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    'Forgot password?',
+                    style: white38TextStyleWithFontSize(14.0),
+                  ),
+                ),
+              ),
+              SizedBox(height: 8),
+              Container(
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.symmetric(vertical: 20),
+                decoration: BoxDecoration(
+                    gradient: gradientButton(),
+                    borderRadius: BorderRadius.circular(30.0)),
+                child: Text(
+                  'Sing In',
+                  style: whiteTextStyleWithSize(18.0),
+                ),
+              ),
+              SizedBox(height: 8),
+              Container(
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.symmetric(vertical: 20),
+                decoration: BoxDecoration(
+                    gradient: gradientButton(),
+                    borderRadius: BorderRadius.circular(30.0)),
+                child: Text(
+                  'Sing In with Google',
+                  style: whiteTextStyleWithSize(18.0),
+                ),
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Don\'t have account? ',
+                    style: whiteTextStyle(),
+                  ),
+                  Text(
+                    'Register now',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.0,
+                      decoration: TextDecoration.underline,
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(height: 150),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

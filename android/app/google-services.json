@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "295320367787",
+    "project_id": "hellofellow-91b2a",
+    "storage_bucket": "hellofellow-91b2a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:295320367787:android:3241e1f0a30b0bb1b73dee",
+        "android_client_info": {
+          "package_name": "ru.friendface.hellow_fellow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "295320367787-j6nlsmi06ur4hlmfuk3skql5jiamlbd0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChzMhHZNiyg1Vy517CTM0dM8lCNVZdVsU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "295320367787-j6nlsmi06ur4hlmfuk3skql5jiamlbd0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
