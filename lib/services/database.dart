@@ -1,17 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseMethods {
-  getUsersByUserName(String username) async {
+  getUsersByUserName(String name) async {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
     Future<QuerySnapshot> futureQuerySnapshot =
-        users.where('name', isEqualTo: username).get();
-    // return await FirebaseFirestore.instance
-    //     .collection('users')
-    //     .where('name', isEqualTo: username)
-    //     .get()
-    //     .then((value) {
-    //   print(value);
-    // });
+        users.where('name', isEqualTo: name).get();
+
+    return futureQuerySnapshot;
+  }
+
+  getUserByUserEmail(String email) {
+    CollectionReference users = FirebaseFirestore.instance.collection('users');
+    Future<QuerySnapshot> futureQuerySnapshot =
+        users.where('email', isEqualTo: email).get();
+    futureQuerySnapshot.then((value) => print(value.docs));
     return futureQuerySnapshot;
   }
 

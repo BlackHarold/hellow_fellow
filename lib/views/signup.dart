@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:hello_fellow/helper/helpfunctions.dart';
 import 'package:hello_fellow/services/auth.dart';
 import 'package:hello_fellow/services/database.dart';
 import 'package:hello_fellow/views/chatroom.dart';
@@ -21,6 +22,8 @@ class _SignUpState extends State<SignUp> {
   AuthMethods authMethods = new AuthMethods();
   DatabaseMethods databaseMethods = new DatabaseMethods();
 
+  // HelperFunctions helpFunctions = new HelperFunctions();
+
   final formKey = GlobalKey<FormState>();
 
   TextEditingController userNameTextEditingController =
@@ -31,12 +34,16 @@ class _SignUpState extends State<SignUp> {
       new TextEditingController();
 
   signUpButtonPressed() {
-
     if (formKey.currentState.validate()) {
       Map<String, String> userInfoMap = {
         'name': userNameTextEditingController.text,
         'email': emailTextEditingController.text
       };
+
+      HelperFunctions.saveUserEmailSharedPreference(
+          emailTextEditingController.text);
+      HelperFunctions.saveUserNameSharedPreference(
+          userNameTextEditingController.text);
 
       setState(() {
         isLoading = true;
@@ -46,8 +53,8 @@ class _SignUpState extends State<SignUp> {
           .signUpWithEmailAndPassword(emailTextEditingController.text,
               passwordTextEditingController.text)
           .then((value) {
-
         databaseMethods.uploadUserInfo(userInfoMap);
+        HelperFunctions.saveUserLoggedInSharedPreference(true);
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
