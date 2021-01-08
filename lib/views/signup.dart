@@ -31,17 +31,6 @@ class _SignUpState extends State<SignUp> {
       new TextEditingController();
 
   signUpButtonPressed() {
-    FutureBuilder(
-      future: Firebase.initializeApp(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          print('error');
-        } else if (snapshot.connectionState == ConnectionState.done) {
-          print("state done");
-        }
-        return null;
-      },
-    );
 
     if (formKey.currentState.validate()) {
       Map<String, String> userInfoMap = {

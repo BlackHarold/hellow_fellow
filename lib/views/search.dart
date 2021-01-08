@@ -31,10 +31,17 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  /// create chatroom, sent user to conversation screen, pushReplacement
+  /// TODO
+  createChatRoomAndStart(String userName) {
+    // List<String> users = [userName, myName];
+    // databaseMethods.createChatRoom(chatRoomId, chatRoomMap)
+  }
+
   searchList() {
-    if(searchSnapshot!=null) {
+    if (searchSnapshot != null) {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: ListView.builder(
             itemCount: searchSnapshot.docs.length,
             itemBuilder: (context, index) {
@@ -45,7 +52,7 @@ class _SearchScreenState extends State<SearchScreen> {
             }),
         height: 350.0,
       );
-    } else{
+    } else {
       return Container(
         height: 350.0,
       );
@@ -69,7 +76,8 @@ class _SearchScreenState extends State<SearchScreen> {
                     Expanded(
                       child: TextField(
                         controller: searchTextEditingController,
-                        decoration: textFieldInputDecoration("search user. . ."),
+                        decoration:
+                            textFieldInputDecoration("search user. . ."),
                         style: TextStyle(
                           fontSize: 16.0,
                           color: Colors.white,
@@ -87,8 +95,8 @@ class _SearchScreenState extends State<SearchScreen> {
                           color: gradientButtonColor,
                           borderRadius: BorderRadius.circular(30.0),
                         ),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 5.0, vertical: 5.0),
                         child: Icon(
                           Icons.search,
                           color: Colors.white54,
@@ -130,11 +138,15 @@ class SearchTile extends StatelessWidget {
             )
           ]),
           Spacer(),
-          Container(
-            decoration: BoxDecoration(
-                color: Colors.blue, borderRadius: BorderRadius.circular(30.0)),
-            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-            child: Text("Message"),
+          GestureDetector(
+            onTap: () {},
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(30.0)),
+              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+              child: Text("Message"),
+            ),
           )
         ],
       ),
