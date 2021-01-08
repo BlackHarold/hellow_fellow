@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_fellow/services/auth.dart';
+import 'package:hello_fellow/services/database.dart';
 import 'package:hello_fellow/views/chatroom.dart';
 import 'package:hello_fellow/widgets/app_bar_widget.dart';
 
@@ -18,6 +19,7 @@ class _SignUpState extends State<SignUp> {
   bool isLoading = false;
 
   AuthMethods authMethods = new AuthMethods();
+  DatabaseMethods databaseMethods = new DatabaseMethods();
 
   final formKey = GlobalKey<FormState>();
 
@@ -42,6 +44,11 @@ class _SignUpState extends State<SignUp> {
     );
 
     if (formKey.currentState.validate()) {
+      Map<String, String> userInfoMap = {
+        'name': userNameTextEditingController.text,
+        'email': emailTextEditingController.text
+      };
+
       setState(() {
         isLoading = true;
       });
@@ -50,8 +57,8 @@ class _SignUpState extends State<SignUp> {
           .signUpWithEmailAndPassword(emailTextEditingController.text,
               passwordTextEditingController.text)
           .then((value) {
-        print('authorization method value: $value');
 
+        databaseMethods.uploadUserInfo(userInfoMap);
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(

@@ -48,7 +48,6 @@ class _SignInState extends State<SignIn> {
           .signUpWithEmailAndPassword(emailTextEditingController.text,
               passwordTextEditingController.text)
           .then((value) {
-        print('authorization method value: $value');
 
         Navigator.pushReplacement(
             context,
