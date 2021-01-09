@@ -25,9 +25,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
   sendMessage() {
     if (messageTextController.text.isNotEmpty &&
         messageTextController.text != '') {
-      Map<String, String> messageMap = {
+      Map<String, dynamic> messageMap = {
         'message': messageTextController.text,
-        'sendBy': Constants.localName
+        'sendBy': Constants.localName,
+        'isUnread': true
       };
       databaseMethods.getConversationMessages(widget.chatRoomId, messageMap);
     }
