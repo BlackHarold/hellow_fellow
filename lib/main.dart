@@ -1,6 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:hello_fellow/helper/authenticate.dart';
+import 'package:hello_fellow/views/chatroom.dart';
+
+import 'helper/authenticate.dart';
+import 'helper/helpfunctions.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,7 +15,28 @@ const Color containerBackground = Color(0xFF112734);
 const Color backgroundColor = Color(0xFF283F4D);
 const Color gradientButtonColor = Color(0xFF004875);
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  // bool userIsLoggedIn = false;
+  bool userIsLoggedIn = false;
+
+  @override
+  void initState() {
+    getLoggedInState();
+    super.initState();
+  }
+
+  getLoggedInState() async {
+    await HelperFunctions.getUserLoggedInSharedPreference()
+        .then((value) => setState(() {
+              userIsLoggedIn = value;
+            }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,9 +47,9 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: containerBackground,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      // home: SignIn(),
-      // home: SignUp(),
-      home: Authenticate(),
+      home: userIsLoggedIn
+          ? ChatRoom()
+          : Authenticate(),
     );
   }
 }

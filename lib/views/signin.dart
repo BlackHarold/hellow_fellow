@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_fellow/helper/helpfunctions.dart';
@@ -34,37 +33,37 @@ class _SignInState extends State<SignIn> {
   QuerySnapshot signInSnapshot;
 
   signInButtonPressed() {
-    String email = emailTextEditingController.text;
-    print('email: ${email}');
-    HelperFunctions.saveUserEmailSharedPreference(email);
+    if (formKey.currentState.validate()) {
+      String email = emailTextEditingController.text;
+      String password = passwordTextEditingController.text;
+      print('email: $email');
+      HelperFunctions.saveUserEmailSharedPreference(email);
 
-    setState(() {
-      isLoading = true;
-    });
+      print('future step');
+      Future<dynamic> futureQuerySnapshot =
+          databaseMethods.getUserByUserEmail(email);
+      futureQuerySnapshot.then((value) {
+        signInSnapshot = value;
+        HelperFunctions.saveUserEmailSharedPreference(
+            signInSnapshot.docs[0].data()['email']);
+      });
 
-    Future<dynamic> futureQuerySnapshot =
-        databaseMethods.getUserByUserEmail(email);
-    futureQuerySnapshot.then((value) {
-      print('value');
-      print(value);
-      signInSnapshot = value;
-      HelperFunctions.saveUserEmailSharedPreference(
-          signInSnapshot.docs[0].data()['email']);
-    });
+      setState(() {
+        isLoading = true;
+      });
 
-    authMethods
-        .signInWithEmailAndPassword(
-            emailTextEditingController.text, passwordTextEditingController.text)
-        .then((value) {
-      if (value != null) {
-        HelperFunctions.saveUserLoggedInSharedPreference(true);
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChatRoom(),
-            ));
-      }
-    });
+      print('auth step');
+      authMethods.signInWithEmailAndPassword(email, password).then((value) {
+        if (value != null) {
+          HelperFunctions.saveUserLoggedInSharedPreference(true);
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatRoom(),
+              ));
+        }
+      });
+    }
   }
 
   @override
@@ -86,6 +85,7 @@ class _SignInState extends State<SignIn> {
                     children: [
                       TextFormField(
                         validator: (val) {
+                          print('email validator $val');
                           //bad request: RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-\/=?^_'{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
                           return EmailValidator.validate(val)
                               ? null
