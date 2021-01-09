@@ -58,7 +58,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // initiateSearch(searchTextEditingController.text);
+                      sendMessage();
+                      messageTextController.text='';
                     },
                     child: Container(
                       height: 40,

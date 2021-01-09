@@ -35,11 +35,13 @@ class DatabaseMethods {
         .catchError((e) => print(e.toString()));
   }
 
+  /// Sending message to Cloud FireStore path is:
+  /// chat_room/'receiver username'_'self email'/chats (hash)/Map{$message, $sendBy}
   getConversationMessages(String chatRoomId, messageMap) {
     FirebaseFirestore.instance
-        .collection('ChatRoom')
+        .collection('chat_room')
         .doc(chatRoomId)
-        .collection('chats')
+        .collection('messages')
         .add(messageMap)
         .catchError((e) {
       print(e.toString());
