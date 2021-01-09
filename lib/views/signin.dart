@@ -3,6 +3,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_fellow/helper/helpfunctions.dart';
+import 'package:hello_fellow/model/user.dart';
 import 'package:hello_fellow/services/auth.dart';
 import 'package:hello_fellow/services/database.dart';
 import 'package:hello_fellow/widgets/app_bar_widget.dart';
@@ -56,6 +57,8 @@ class _SignInState extends State<SignIn> {
       authMethods.signInWithEmailAndPassword(email, password).then((value) {
         if (value != null) {
           HelperFunctions.saveUserLoggedInSharedPreference(true);
+          UserObject signingUser = value;
+          print('$signingUser');
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(

@@ -66,7 +66,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
       DatabaseMethods().createChatRoom(chatRoomId, chatRoomMap);
       Navigator.push(context,
-          MaterialPageRoute(builder: (context) => ConversationScreen()));
+          MaterialPageRoute(builder: (context) => ConversationScreen(chatRoomId)));
     } else {
       print('you cannot sen message to yourself');
     }
@@ -164,6 +164,7 @@ class _SearchScreenState extends State<SearchScreen> {
 }
 
 getChatRoomId(String a, String b) {
+  print('a: $a, b: $b');
   if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
     return '$b\_$a';
   } else {

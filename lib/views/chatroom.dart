@@ -30,10 +30,13 @@ class _ChatRoomState extends State<ChatRoom> {
         actions: [
           GestureDetector(
             onTap: () {
+              print('exit button pushed');
+              HelperFunctions.saveUserLoggedInSharedPreference(false);
               Navigator.pushReplacement(
                   // context, MaterialPageRoute(builder: (context) => SignIn()));
                   context,
                   MaterialPageRoute(builder: (context) => Authenticate()));
+              authMethods.signOut();
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 20),

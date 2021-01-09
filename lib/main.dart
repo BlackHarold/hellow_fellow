@@ -34,11 +34,14 @@ class _MyAppState extends State<MyApp> {
     await HelperFunctions.getUserLoggedInSharedPreference()
         .then((value) => setState(() {
               userIsLoggedIn = value;
+              print('getLoggedInState $value');
             }));
   }
 
   @override
   Widget build(BuildContext context) {
+    HelperFunctions.getUserLoggedInSharedPreference().then((value) => userIsLoggedIn = value);
+    print('$userIsLoggedIn');
     return MaterialApp(
       title: 'Hello Fellow',
       debugShowCheckedModeBanner: false,
