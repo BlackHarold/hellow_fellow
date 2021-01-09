@@ -32,6 +32,8 @@ class _ChatRoomState extends State<ChatRoom> {
             onTap: () {
               print('exit button pushed');
               HelperFunctions.saveUserLoggedInSharedPreference(false);
+              HelperFunctions.saveUserEmailSharedPreference('');
+              HelperFunctions.saveUserNameSharedPreference('');
               Navigator.pushReplacement(
                   // context, MaterialPageRoute(builder: (context) => SignIn()));
                   context,

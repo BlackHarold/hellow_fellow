@@ -47,6 +47,8 @@ class _SignInState extends State<SignIn> {
         signInSnapshot = value;
         HelperFunctions.saveUserEmailSharedPreference(
             signInSnapshot.docs[0].data()['email']);
+        HelperFunctions.saveUserNameSharedPreference(
+            signInSnapshot.docs[0].data()['name']);
       });
 
       setState(() {
