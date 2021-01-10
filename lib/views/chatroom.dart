@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_fellow/helper/authenticate.dart';
 import 'package:hello_fellow/helper/constants.dart';
-import 'package:hello_fellow/helper/helpfunctions.dart';
+import 'package:hello_fellow/helper/share_preferences.dart';
 import 'package:hello_fellow/services/auth.dart';
 import 'package:hello_fellow/services/database.dart';
 import 'package:hello_fellow/views/search.dart';
@@ -22,20 +22,17 @@ class _ChatRoomState extends State<ChatRoom> {
   @override
   void initState() {
     setState(() {
-      getUserInfo();
-      print('constants localName: ${Constants.localName}');
+      HelperFunctions.getUserNameSharedPreference().then((value) {
+        Constants.localName = value;
+      });
     });
-    queryChats = databaseMethods.getChatRooms(Constants.localName);
     super.initState();
-  }
-
-  getUserInfo() async {
-    Constants.localName = await HelperFunctions.getUserNameSharedPreference();
-    print('localName: ${Constants.localName}');
   }
 
   @override
   Widget build(BuildContext context) {
+    queryChats = databaseMethods.getChatRooms(Constants.localName);
+
     return Scaffold(
       appBar: AppBar(
         title: Image.asset('assets/images/hello_logo.png', height: 45),
@@ -44,11 +41,8 @@ class _ChatRoomState extends State<ChatRoom> {
             onTap: () {
               print('exit button pushed');
               HelperFunctions.saveUserLoggedInSharedPreference(false);
-              Navigator.pushReplacement(
-                  // context, MaterialPageRoute(builder: (context) => SignIn()));
-                  context,
+              Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => Authenticate()));
-              authMethods.signOut();
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 20),

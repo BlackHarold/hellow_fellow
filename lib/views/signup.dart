@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:hello_fellow/helper/helpfunctions.dart';
+import 'package:hello_fellow/helper/constants.dart';
+import 'package:hello_fellow/helper/share_preferences.dart';
 import 'package:hello_fellow/services/auth.dart';
 import 'package:hello_fellow/services/database.dart';
 import 'package:hello_fellow/views/chatroom.dart';
@@ -45,16 +46,22 @@ class _SignUpState extends State<SignUp> {
       HelperFunctions.saveUserNameSharedPreference(
           userNameTextEditingController.text);
 
+      HelperFunctions.getUserNameSharedPreference()
+          .then((value) => Constants.localName = value);
+
       setState(() {
         isLoading = true;
       });
 
       authMethods
-          .signUpWithEmailAndPassword(emailTextEditingController.text,
-              passwordTextEditingController.text)
+          .signUpWithEmailAndPassword(
+              emailTextEditingController.text,
+              passwordTextEditingController.text,
+              userNameTextEditingController.text)
           .then((value) {
         databaseMethods.uploadUserInfo(userInfoMap);
         HelperFunctions.saveUserLoggedInSharedPreference(true);
+
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(

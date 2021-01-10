@@ -57,9 +57,9 @@ class DatabaseMethods {
     return messagesRefWithOrderBy;
   }
 
-  getChatRooms(String userName) {
+  getChatRooms(String userName) async{
     print('contains userName: $userName');
-    Query chatsRef = FirebaseFirestore.instance
+    Query chatsRef = await FirebaseFirestore.instance
         .collection('chat_room')
         .where('users', arrayContains: userName);
     return chatsRef;

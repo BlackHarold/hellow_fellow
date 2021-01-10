@@ -2,8 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hello_fellow/helper/helpfunctions.dart';
-import 'package:hello_fellow/model/user.dart';
+import 'package:hello_fellow/helper/share_preferences.dart';
 import 'package:hello_fellow/services/auth.dart';
 import 'package:hello_fellow/services/database.dart';
 import 'package:hello_fellow/widgets/app_bar_widget.dart';
@@ -38,30 +37,26 @@ class _SignInState extends State<SignIn> {
     if (formKey.currentState.validate()) {
       String email = emailTextEditingController.text;
       String password = passwordTextEditingController.text;
-      print('email: $email');
       HelperFunctions.saveUserEmailSharedPreference(email);
 
-      print('future step');
       Future<dynamic> futureQuerySnapshot =
           databaseMethods.getUserByUserEmail(email);
       futureQuerySnapshot.then((value) {
         signInSnapshot = value;
         HelperFunctions.saveUserEmailSharedPreference(
             signInSnapshot.docs[0].data()['email']);
-        HelperFunctions.saveUserNameSharedPreference(
-            signInSnapshot.docs[0].data()['name']);
+        // HelperFunctions.saveUserNameSharedPreference(
+        //     signInSnapshot.docs[0].data()['name']);
       });
 
       setState(() {
         isLoading = true;
       });
 
-      print('auth step');
       authMethods.signInWithEmailAndPassword(email, password).then((value) {
         if (value != null) {
           HelperFunctions.saveUserLoggedInSharedPreference(true);
-          UserObject signingUser = value;
-          print('$signingUser');
+
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
