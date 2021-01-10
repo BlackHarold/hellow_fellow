@@ -10,24 +10,31 @@ class ChatList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: queryChats.snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Something went wrong');
-        }
+    if (queryChats != null) {
+      return StreamBuilder<QuerySnapshot>(
+        stream: queryChats.snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text('Something went wrong');
+          }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text('Loading...');
-        }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Text('Loading...');
+          }
 
-        return ListView(
-          children: snapshot.data.docs.map((DocumentSnapshot documentSnapshot) {
-            return ChatsTile(documentSnapshot.data()['chatroomId']);
-          }).toList(),
-        );
-      },
-    );
+          return ListView(
+            children:
+                snapshot.data.docs.map((DocumentSnapshot documentSnapshot) {
+              return ChatsTile(documentSnapshot.data()['chatroomId']);
+            }).toList(),
+          );
+        },
+      );
+    } else {
+      return Container(
+        height: 10,
+      );
+    }
   }
 }
 

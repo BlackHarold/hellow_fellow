@@ -24,6 +24,7 @@ class _ChatRoomState extends State<ChatRoom> {
     setState(() {
       HelperFunctions.getUserNameSharedPreference().then((value) {
         Constants.localName = value;
+        queryChats = databaseMethods.getChatRooms(Constants.localName);
       });
     });
     super.initState();
@@ -31,7 +32,6 @@ class _ChatRoomState extends State<ChatRoom> {
 
   @override
   Widget build(BuildContext context) {
-    queryChats = databaseMethods.getChatRooms(Constants.localName);
 
     return Scaffold(
       appBar: AppBar(
