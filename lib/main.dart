@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_fellow/views/chatroom.dart';
+import 'package:hello_fellow/widgets/styles.dart';
 
 import 'helper/authenticate.dart';
 import 'helper/helpfunctions.dart';
@@ -10,10 +11,6 @@ void main() async {
   await Firebase.initializeApp();
   runApp(MyApp());
 }
-
-const Color containerBackground = Color(0xFF112734);
-const Color backgroundColor = Color(0xFF283F4D);
-const Color gradientButtonColor = Color(0xFF004875);
 
 class MyApp extends StatefulWidget {
   @override
@@ -40,7 +37,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    HelperFunctions.getUserLoggedInSharedPreference().then((value) => userIsLoggedIn = value);
+    HelperFunctions.getUserLoggedInSharedPreference()
+        .then((value) => userIsLoggedIn = value);
     print('$userIsLoggedIn');
     return MaterialApp(
       title: 'Hello Fellow',
@@ -50,9 +48,7 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor: containerBackground,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: userIsLoggedIn
-          ? ChatRoom()
-          : Authenticate(),
+      home: userIsLoggedIn ? ChatRoom() : Authenticate(),
     );
   }
 }

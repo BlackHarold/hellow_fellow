@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hello_fellow/helper/constants.dart';
 import 'package:hello_fellow/services/database.dart';
 import 'package:hello_fellow/widgets/app_bar_widget.dart';
-
-import '../main.dart';
+import 'package:hello_fellow/widgets/styles.dart';
 
 class ConversationScreen extends StatefulWidget {
   final String chatRoomId;
@@ -35,8 +34,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         }
 
         return ListView(
-          children:
-              snapshot.data.documents.map((DocumentSnapshot documentSnapshot) {
+          children: snapshot.data.docs.map((DocumentSnapshot documentSnapshot) {
             return MessageTile(documentSnapshot.data()['message'],
                 documentSnapshot.data()['sendBy'] == Constants.localName);
           }).toList(),
@@ -107,12 +105,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
                       color: gradientButtonColor,
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
                     child: Icon(
                       Icons.send,
-                      color: Colors.white54,
-                      size: 25.0,
+                      color: Colors.white,
+                      size: 24.0,
                     ),
                   ),
                 ),

@@ -1,11 +1,11 @@
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_fellow/helper/helpfunctions.dart';
 import 'package:hello_fellow/services/auth.dart';
 import 'package:hello_fellow/services/database.dart';
 import 'package:hello_fellow/views/chatroom.dart';
 import 'package:hello_fellow/widgets/app_bar_widget.dart';
+import 'package:hello_fellow/widgets/styles.dart';
 
 class SignUp extends StatefulWidget {
   final Function toggle;

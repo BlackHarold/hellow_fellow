@@ -58,6 +58,7 @@ class DatabaseMethods {
   }
 
   getChatRooms(String userName) {
+    print('contains userName: $userName');
     Query chatsRef = FirebaseFirestore.instance
         .collection('chat_room')
         .where('users', arrayContains: userName);

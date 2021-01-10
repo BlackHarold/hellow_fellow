@@ -7,6 +7,7 @@ import 'package:hello_fellow/model/user.dart';
 import 'package:hello_fellow/services/auth.dart';
 import 'package:hello_fellow/services/database.dart';
 import 'package:hello_fellow/widgets/app_bar_widget.dart';
+import 'package:hello_fellow/widgets/styles.dart';
 
 import 'chatroom.dart';
 

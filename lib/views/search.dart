@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:hello_fellow/helper/constants.dart';
 import 'package:hello_fellow/services/database.dart';
 import 'package:hello_fellow/widgets/app_bar_widget.dart';
+import 'package:hello_fellow/widgets/styles.dart';
 
-import '../main.dart';
 import 'conversation.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -65,8 +65,10 @@ class _SearchScreenState extends State<SearchScreen> {
       };
 
       DatabaseMethods().createChatRoom(chatRoomId, chatRoomMap);
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => ConversationScreen(chatRoomId)));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ConversationScreen(chatRoomId)));
     } else {
       print('you cannot sen message to yourself');
     }
