@@ -1,6 +1,4 @@
-import 'package:hello_fellow/helper/helpfunctions.dart';
 
-class Constants{
+class Constants {
   static String localName = '';
-
 }
