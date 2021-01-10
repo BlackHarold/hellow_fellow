@@ -36,16 +36,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
         return ListView(
           children:
               snapshot.data.documents.map((DocumentSnapshot documentSnapshot) {
-            print('list tile builder ${documentSnapshot.data()['message']}');
-            return ListTile(
-              title: new Text(
-                documentSnapshot.data()['message'],
-                style: TextStyle(color: Colors.white),
-              ),
-            );
+            return MessageTile(documentSnapshot.data()['message']);
           }).toList(),
-          // MessageTile(documentSnapshot.data()['message']);
-          // }).toList(),
         );
       },
     );
@@ -138,8 +130,11 @@ class MessageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text(message, style: TextStyle(color: Colors.white)),
+    return ListTile(
+      title: new Text(
+        message,
+        style: TextStyle(color: Colors.white),
+      ),
     );
   }
 }
