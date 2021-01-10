@@ -49,11 +49,11 @@ class DatabaseMethods {
   }
 
   getConversationMessages(String chatRoomId) {
-    Query messagesRef = FirebaseFirestore.instance
+    Query messagesRefWithOrderBy = FirebaseFirestore.instance
         .collection('chat_room')
         .doc(chatRoomId)
         .collection('messages')
         .orderBy('time', descending: false);
-    return messagesRef;
+    return messagesRefWithOrderBy;
   }
 }

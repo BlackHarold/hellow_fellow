@@ -19,11 +19,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   TextEditingController messageTextController = new TextEditingController();
 
-  Query messagesReference;
+  Query queryMessages;
 
   Widget chatMessageList() {
     return StreamBuilder<QuerySnapshot>(
-      stream: messagesReference.snapshots(),
+      stream: queryMessages.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');
@@ -38,7 +38,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
               snapshot.data.documents.map((DocumentSnapshot documentSnapshot) {
             print('list tile builder ${documentSnapshot.data()['message']}');
             return ListTile(
-              title: new Text(documentSnapshot.data()['message']),
+              title: new Text(
+                documentSnapshot.data()['message'],
+                style: TextStyle(color: Colors.white),
+              ),
             );
           }).toList(),
           // MessageTile(documentSnapshot.data()['message']);
@@ -65,7 +68,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   @override
   void initState() {
     setState(() {
-      messagesReference =
+      queryMessages =
           databaseMethods.getConversationMessages(widget.chatRoomId);
     });
 
@@ -78,7 +81,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
       appBar: appBarMain(context),
       body: Column(
         children: <Widget>[
-          Container(height: 350, child: chatMessageList()),
+          Container(
+            height: 350,
+            child: chatMessageList(),
+          ),
           Container(
             height: 50,
             alignment: Alignment.bottomCenter,
@@ -133,7 +139,7 @@ class MessageTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Text(message),
+      child: Text(message, style: TextStyle(color: Colors.white)),
     );
   }
 }
