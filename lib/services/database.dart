@@ -37,7 +37,7 @@ class DatabaseMethods {
 
   /// Sending message to Cloud FireStore path is:
   /// chat_room/'receiver username'_'self email'/chats (hash)/Map{$message, $sendBy}
-  getConversationMessages(String chatRoomId, messageMap) {
+  addConversationMessages(String chatRoomId, messageMap) {
     FirebaseFirestore.instance
         .collection('chat_room')
         .doc(chatRoomId)
@@ -46,5 +46,14 @@ class DatabaseMethods {
         .catchError((e) {
       print(e.toString());
     });
+  }
+
+  getConversationMessages(String chatRoomId) {
+    Query messagesRef = FirebaseFirestore.instance
+        .collection('chat_room')
+        .doc(chatRoomId)
+        .collection('messages')
+        .orderBy('time', descending: false);
+    return messagesRef;
   }
 }
