@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hello_fellow/helper/share_preferences.dart';
 import 'package:hello_fellow/services/auth.dart';
+import 'package:hello_fellow/services/database.dart';
 import 'package:hello_fellow/widgets/app_bar_widget.dart';
+import 'package:hello_fellow/widgets/styles.dart';
 
 import 'chatroom.dart';
 
@@ -22,39 +26,43 @@ class _SignInState extends State<SignIn> {
       new TextEditingController();
   TextEditingController passwordTextEditingController =
       new TextEditingController();
+  DatabaseMethods databaseMethods = new DatabaseMethods();
   AuthMethods authMethods = new AuthMethods();
 
   final formKey = GlobalKey<FormState>();
 
-  signInButtonPressed() {
-    FutureBuilder(
-      future: Firebase.initializeApp(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          print('error');
-        } else if (snapshot.connectionState == ConnectionState.done) {
-          print("state done");
-        }
-        return null;
-      },
-    );
+  QuerySnapshot signInSnapshot;
 
+  signInButtonPressed() {
     if (formKey.currentState.validate()) {
+      String email = emailTextEditingController.text;
+      String password = passwordTextEditingController.text;
+      HelperFunctions.saveUserEmailSharedPreference(email);
+
+      Future<dynamic> futureQuerySnapshot =
+          databaseMethods.getUserByUserEmail(email);
+      futureQuerySnapshot.then((value) {
+        signInSnapshot = value;
+        HelperFunctions.saveUserEmailSharedPreference(
+            signInSnapshot.docs[0].data()['email']);
+        // HelperFunctions.saveUserNameSharedPreference(
+        //     signInSnapshot.docs[0].data()['name']);
+      });
+
       setState(() {
         isLoading = true;
       });
 
-      authMethods
-          .signUpWithEmailAndPassword(emailTextEditingController.text,
-              passwordTextEditingController.text)
-          .then((value) {
-        print('authorization method value: $value');
+      authMethods.signInWithEmailAndPassword(email, password).then((value) {
+        if (value != null) {
+          HelperFunctions.saveUserLoggedInSharedPreference(true);
 
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChatRoom(),
-            ));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatRoom(),
+              ));
+        }
       });
     }
   }
@@ -65,53 +73,76 @@ class _SignInState extends State<SignIn> {
       appBar: appBarMain(context),
       body: SingleChildScrollView(
         child: Container(
-          height: MediaQuery.of(context).size.height,
+          height: MediaQuery.of(context).size.height - 50,
           alignment: Alignment.bottomCenter,
-          padding: EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                validator: (val) {
-                  //bad request: RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-\/=?^_'{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
-                  return EmailValidator.validate(val)
-                      ? null
-                      : 'Please enter a valid email';
-                },
-                controller: emailTextEditingController,
-                style: whiteTextStyle(),
-                decoration: textFieldInputDecoration('email'),
-              ),
-              TextFormField(
-                obscureText: true,
-                validator: (val) {
-                  return val.length > 6
-                      ? null
-                      : "Please provide password more than 6 characters";
-                },
-                controller: passwordTextEditingController,
-                style: whiteTextStyle(),
-                decoration: textFieldInputDecoration('password'),
-              ),
-              SizedBox(height: 8),
-              Container(
-                // Padding(
-                // padding: const EdgeInsets.only(left: 200),
-                alignment: Alignment.centerRight,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Text(
-                    'Forgot password?',
-                    style: white38TextStyleWithFontSize(14.0),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        validator: (val) {
+                          print('email validator $val');
+                          //bad request: RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-\/=?^_'{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+                          return EmailValidator.validate(val)
+                              ? null
+                              : 'Please enter a valid email';
+                        },
+                        controller: emailTextEditingController,
+                        style: whiteTextStyle(),
+                        decoration: textFieldInputDecoration('email'),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              SizedBox(height: 8),
-              GestureDetector(
-                onTap: () {
-                  signInButtonPressed();
-                },
-                child: Container(
+                TextFormField(
+                  obscureText: true,
+                  validator: (val) {
+                    return val.length > 6
+                        ? null
+                        : "Please provide password more than 6 characters";
+                  },
+                  controller: passwordTextEditingController,
+                  style: whiteTextStyle(),
+                  decoration: textFieldInputDecoration('password'),
+                ),
+                SizedBox(height: 8),
+                Container(
+                  // Padding(
+                  // padding: const EdgeInsets.only(left: 200),
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Text(
+                      'Forgot password?',
+                      style: white38TextStyleWithFontSize(14.0),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () {
+                    signInButtonPressed();
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    decoration: BoxDecoration(
+                        gradient: gradientButton(),
+                        borderRadius: BorderRadius.circular(30.0)),
+                    child: Text(
+                      'Sing In',
+                      style: whiteTextStyleWithSize(18.0),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 8),
+                Container(
                   alignment: Alignment.center,
                   width: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.symmetric(vertical: 20),
@@ -119,52 +150,39 @@ class _SignInState extends State<SignIn> {
                       gradient: gradientButton(),
                       borderRadius: BorderRadius.circular(30.0)),
                   child: Text(
-                    'Sing In',
+                    'Sing In with Google',
                     style: whiteTextStyleWithSize(18.0),
                   ),
                 ),
-              ),
-              SizedBox(height: 8),
-              Container(
-                alignment: Alignment.center,
-                width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(vertical: 20),
-                decoration: BoxDecoration(
-                    gradient: gradientButton(),
-                    borderRadius: BorderRadius.circular(30.0)),
-                child: Text(
-                  'Sing In with Google',
-                  style: whiteTextStyleWithSize(18.0),
-                ),
-              ),
-              SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Don\'t have account? ',
-                    style: whiteTextStyle(),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      widget.toggle();
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Text(
-                        'Register now',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14.0,
-                          decoration: TextDecoration.underline,
+                SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Don\'t have account? ',
+                      style: whiteTextStyle(),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        widget.toggle();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Text(
+                          'Register now',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14.0,
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                ],
-              ),
-              SizedBox(height: 150),
-            ],
+                    )
+                  ],
+                ),
+                SizedBox(height: 150),
+              ],
+            ),
           ),
         ),
       ),

@@ -1,9 +1,12 @@
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:hello_fellow/helper/constants.dart';
+import 'package:hello_fellow/helper/share_preferences.dart';
 import 'package:hello_fellow/services/auth.dart';
+import 'package:hello_fellow/services/database.dart';
 import 'package:hello_fellow/views/chatroom.dart';
 import 'package:hello_fellow/widgets/app_bar_widget.dart';
+import 'package:hello_fellow/widgets/styles.dart';
 
 class SignUp extends StatefulWidget {
   final Function toggle;
@@ -18,6 +21,9 @@ class _SignUpState extends State<SignUp> {
   bool isLoading = false;
 
   AuthMethods authMethods = new AuthMethods();
+  DatabaseMethods databaseMethods = new DatabaseMethods();
+
+  // HelperFunctions helpFunctions = new HelperFunctions();
 
   final formKey = GlobalKey<FormState>();
 
@@ -29,28 +35,32 @@ class _SignUpState extends State<SignUp> {
       new TextEditingController();
 
   signUpButtonPressed() {
-    FutureBuilder(
-      future: Firebase.initializeApp(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          print('error');
-        } else if (snapshot.connectionState == ConnectionState.done) {
-          print("state done");
-        }
-        return null;
-      },
-    );
-
     if (formKey.currentState.validate()) {
+      Map<String, String> userInfoMap = {
+        'name': userNameTextEditingController.text,
+        'email': emailTextEditingController.text
+      };
+
+      HelperFunctions.saveUserEmailSharedPreference(
+          emailTextEditingController.text);
+      HelperFunctions.saveUserNameSharedPreference(
+          userNameTextEditingController.text);
+
+      HelperFunctions.getUserNameSharedPreference()
+          .then((value) => Constants.localName = value);
+
       setState(() {
         isLoading = true;
       });
 
       authMethods
-          .signUpWithEmailAndPassword(emailTextEditingController.text,
-              passwordTextEditingController.text)
+          .signUpWithEmailAndPassword(
+              emailTextEditingController.text,
+              passwordTextEditingController.text,
+              userNameTextEditingController.text)
           .then((value) {
-        print('authorization method value: $value');
+        databaseMethods.uploadUserInfo(userInfoMap);
+        HelperFunctions.saveUserLoggedInSharedPreference(true);
 
         Navigator.pushReplacement(
             context,
