@@ -3,6 +3,7 @@ import 'package:hello_fellow/helper/authenticate.dart';
 import 'package:hello_fellow/helper/constants.dart';
 import 'package:hello_fellow/helper/helpfunctions.dart';
 import 'package:hello_fellow/services/auth.dart';
+import 'package:hello_fellow/services/database.dart';
 import 'package:hello_fellow/views/search.dart';
 
 class ChatRoom extends StatefulWidget {
@@ -12,10 +13,13 @@ class ChatRoom extends StatefulWidget {
 
 class _ChatRoomState extends State<ChatRoom> {
   AuthMethods authMethods = new AuthMethods();
+  DatabaseMethods databaseMethods = new DatabaseMethods();
 
   @override
   void initState() {
     getUserInfo();
+    databaseMethods.getChatRooms(Constants.localName);
+    super.initState();
   }
 
   getUserInfo() async {

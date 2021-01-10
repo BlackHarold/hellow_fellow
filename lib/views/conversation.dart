@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_fellow/helper/constants.dart';
 import 'package:hello_fellow/services/database.dart';
@@ -36,7 +37,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
         return ListView(
           children:
               snapshot.data.documents.map((DocumentSnapshot documentSnapshot) {
-            return MessageTile(documentSnapshot.data()['message']);
+            return MessageTile(documentSnapshot.data()['message'],
+                documentSnapshot.data()['sendBy'] == Constants.localName);
           }).toList(),
         );
       },
@@ -125,15 +127,36 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
 class MessageTile extends StatelessWidget {
   final String message;
+  final bool isSendByMe;
 
-  MessageTile(this.message);
+  MessageTile(this.message, this.isSendByMe);
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: new Text(
-        message,
-        style: TextStyle(color: Colors.white),
+    return Container(
+      padding: EdgeInsets.only(
+          left: isSendByMe ? 24 : 8, right: isSendByMe ? 8 : 24),
+      width: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.symmetric(vertical: 4.0),
+      alignment: isSendByMe ? Alignment.bottomRight : Alignment.bottomLeft,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        decoration: BoxDecoration(
+          color: isSendByMe ? Colors.white12 : Colors.blueGrey,
+          borderRadius: isSendByMe
+              ? BorderRadius.only(
+                  topRight: Radius.circular(20),
+                  topLeft: Radius.circular(20),
+                  bottomLeft: Radius.circular(20))
+              : BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomRight: Radius.circular(20)),
+        ),
+        child: Text(
+          message,
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }

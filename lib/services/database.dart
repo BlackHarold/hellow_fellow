@@ -56,4 +56,11 @@ class DatabaseMethods {
         .orderBy('time', descending: false);
     return messagesRefWithOrderBy;
   }
+
+  getChatRooms(String userName) {
+    Query chatsRef = FirebaseFirestore.instance
+        .collection('chat_room')
+        .where('users', arrayContains: userName);
+    return chatsRef;
+  }
 }
