@@ -4,15 +4,16 @@ import 'package:hello_fellow/views/conversation.dart';
 import 'package:hello_fellow/widgets/styles.dart';
 
 class ChatList extends StatelessWidget {
-  final Query queryChats;
+  // final Query queryChats;
+  final Stream streamChats;
 
-  ChatList(this.queryChats);
+  ChatList(this.streamChats);
 
   @override
   Widget build(BuildContext context) {
-    if (queryChats != null) {
+    if (streamChats != null) {
       return StreamBuilder<QuerySnapshot>(
-        stream: queryChats.snapshots(),
+        stream: streamChats,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return Text('Something went wrong');
