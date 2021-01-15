@@ -18,21 +18,25 @@ class _ChatRoomState extends State<ChatRoom> {
   AuthMethods authMethods = new AuthMethods();
   DatabaseMethods databaseMethods = new DatabaseMethods();
   Query queryChats;
+  Stream streamChats;
 
   @override
   void initState() {
-    setState(() {
-      HelperFunctions.getUserNameSharedPreference().then((value) {
-        Constants.localName = value;
+    getUserInfoChats();
+    super.initState();
+  }
+
+  getUserInfoChats() async {
+    Constants.localName = await HelperFunctions.getUserNameSharedPreference();
+    DatabaseMethods().getChatRooms(Constants.localName).then((snapshots) {
+      setState(() {
+        streamChats = snapshots;
       });
     });
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    queryChats = databaseMethods.getChatRooms(Constants.localName);
-
     return Scaffold(
       appBar: AppBar(
         title: Image.asset('assets/images/hello_logo.png', height: 45),
@@ -51,7 +55,7 @@ class _ChatRoomState extends State<ChatRoom> {
           )
         ],
       ),
-      body: ChatList(queryChats),
+      body: ChatList(streamChats),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.search),
         onPressed: () {

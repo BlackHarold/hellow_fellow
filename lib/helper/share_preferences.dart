@@ -43,4 +43,15 @@ class HelperFunctions {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(_sharedPreferenceUserEmailKey);
   }
+
+  static void saveState(double value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('listViewOffset', value);
+  }
+
+  static Future<double> getState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    double state = prefs.getDouble('listViewOffset');
+    return state;
+  }
 }

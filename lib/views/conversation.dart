@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_fellow/helper/constants.dart';
+import 'package:hello_fellow/helper/share_preferences.dart';
 import 'package:hello_fellow/services/database.dart';
 import 'package:hello_fellow/widgets/app_bar_widget.dart';
 import 'package:hello_fellow/widgets/styles.dart';
+
+typedef double GetOffsetMethod();
 
 class ConversationScreen extends StatefulWidget {
   final String chatRoomId;
@@ -18,6 +20,9 @@ class ConversationScreen extends StatefulWidget {
 class _ConversationScreenState extends State<ConversationScreen> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   TextEditingController messageTextController = new TextEditingController();
+  ScrollController scrollController = ScrollController();
+  double listViewOffset = 0.0;
+  GetOffsetMethod getOffsetMethod;
 
   Query queryMessages;
 
@@ -34,6 +39,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         }
 
         return ListView(
+          controller: scrollController,
           children: snapshot.data.docs.map((DocumentSnapshot documentSnapshot) {
             return MessageTile(documentSnapshot.data()['message'],
                 documentSnapshot.data()['sendBy'] == Constants.localName);
@@ -57,13 +63,24 @@ class _ConversationScreenState extends State<ConversationScreen> {
     }
   }
 
+  void saveState(double value) async {
+    HelperFunctions.saveState(value);
+  }
+
+  void setOffset(double offset) {
+    this.listViewOffset = offset;
+  }
+
   @override
   void initState() {
+    //Init scrolling to preserve it
+    HelperFunctions.getState().then((value) => setOffset(value));
+    scrollController =
+        new ScrollController(initialScrollOffset: listViewOffset);
     setState(() {
       queryMessages =
           databaseMethods.getConversationMessages(widget.chatRoomId);
     });
-
     super.initState();
   }
 
@@ -97,6 +114,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 GestureDetector(
                   onTap: () {
                     sendMessage();
+                    saveState(scrollController.position.maxScrollExtent + 60);
+                    scrollController
+                        .jumpTo(scrollController.position.maxScrollExtent + 60);
                   },
                   child: Container(
                     height: 40,
