@@ -48,18 +48,21 @@ class DatabaseMethods {
     });
   }
 
-  getConversationMessages(String chatRoomId) {
+  Query getConversationMessages(String chatRoomId) {
     Query messagesRefWithOrderBy = FirebaseFirestore.instance
         .collection('chat_room')
         .doc(chatRoomId)
         .collection('messages')
-        .orderBy('time', descending: false);
+        .orderBy('time', descending: true);
     return messagesRefWithOrderBy;
   }
 
-  getChatRooms(String userName) async {
-    return await FirebaseFirestore.instance
-        .collection('chat_room')
-        .where('users', arrayContains: userName).snapshots();
+  Future<QuerySnapshot>  getChatRooms(String userName) async {
+    CollectionReference rooms = FirebaseFirestore.instance
+        .collection('chat_room');
+    Future<QuerySnapshot> futureQuerySnapshot =
+    rooms.where('users', arrayContains: userName).get();
+    futureQuerySnapshot.then((value) => print(value.docs));
+    return futureQuerySnapshot;
   }
 }
