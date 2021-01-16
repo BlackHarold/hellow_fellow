@@ -23,60 +23,14 @@ class _ConversationScreenState extends State<ConversationScreen> {
   ScrollController scrollController = ScrollController();
   double listViewOffset = 0.0;
   GetOffsetMethod getOffsetMethod;
-
   Query queryMessages;
-
-  Widget chatMessageList() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: queryMessages.snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Something went wrong');
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text('Loading...');
-        }
-
-        return ListView(
-          controller: scrollController,
-          children: snapshot.data.docs.map((DocumentSnapshot documentSnapshot) {
-            return MessageTile(documentSnapshot.data()['message'],
-                documentSnapshot.data()['sendBy'] == Constants.localName);
-          }).toList(),
-        );
-      },
-    );
-  }
-
-  sendMessage() {
-    if (messageTextController.text.isNotEmpty &&
-        messageTextController.text != '') {
-      Map<String, dynamic> messageMap = {
-        'message': messageTextController.text,
-        'sendBy': Constants.localName,
-        'isUnread': true,
-        'time': DateTime.now().millisecondsSinceEpoch
-      };
-      databaseMethods.addConversationMessages(widget.chatRoomId, messageMap);
-      messageTextController.text = '';
-    }
-  }
-
-  void saveState(double value) async {
-    HelperFunctions.saveState(value);
-  }
-
-  void setOffset(double offset) {
-    this.listViewOffset = offset;
-  }
 
   @override
   void initState() {
     //Init scrolling to preserve it
     HelperFunctions.getState().then((value) => setOffset(value));
     scrollController =
-        new ScrollController(initialScrollOffset: listViewOffset);
+    new ScrollController(initialScrollOffset: listViewOffset);
     setState(() {
       queryMessages =
           databaseMethods.getConversationMessages(widget.chatRoomId);
@@ -90,9 +44,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
       appBar: appBarMain(context),
       body: Column(
         children: <Widget>[
-          Container(
-            height: 350,
-            child: chatMessageList(),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Container(
+                child: chatMessageList(),
+              ),
+            ),
           ),
           Container(
             height: 50,
@@ -114,9 +72,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 GestureDetector(
                   onTap: () {
                     sendMessage();
-                    saveState(scrollController.position.maxScrollExtent + 60);
                     scrollController
-                        .jumpTo(scrollController.position.maxScrollExtent + 60);
+                        .jumpTo(scrollController.position.minScrollExtent);
                   },
                   child: Container(
                     height: 40,
@@ -140,35 +97,87 @@ class _ConversationScreenState extends State<ConversationScreen> {
       ),
     );
   }
+
+  Widget chatMessageList() {
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 20),
+        child: Container(
+          decoration: BoxDecoration(
+            color: backgroundColor,
+          ),
+          child: StreamBuilder<QuerySnapshot>(
+              stream: queryMessages.snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Text('Something went wrong');
+                }
+
+                if (!snapshot.hasData || snapshot.connectionState == ConnectionState.waiting){
+                  return Text('Loading..');
+                }
+
+                return ListView.builder(
+                    reverse: true,
+                    padding: EdgeInsets.only(top: 20),
+                    controller: scrollController,
+                    itemCount: snapshot.data.docs.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return MessageTile(index,snapshot);
+                    });
+              }),
+        ),
+      ),
+    );
+  }
+
+  sendMessage() {
+    if (messageTextController.text.isNotEmpty &&
+        messageTextController.text != '') {
+      Map<String, dynamic> messageMap = {
+        'message': messageTextController.text,
+        'sendBy': Constants.localName,
+        'isUnread': true,
+        'time': DateTime
+            .now()
+            .millisecondsSinceEpoch
+      };
+      databaseMethods.addConversationMessages(widget.chatRoomId, messageMap);
+      messageTextController.text = '';
+    }
+  }
+
+  void setOffset(double offset) {
+    this.listViewOffset = offset;
+  }
 }
 
 class MessageTile extends StatelessWidget {
-  final String message;
-  final bool isSendByMe;
+  final int index;
+  final AsyncSnapshot snapshot;
 
-  MessageTile(this.message, this.isSendByMe);
+  MessageTile(this.index, this.snapshot);
 
   @override
   Widget build(BuildContext context) {
+    String message = snapshot.data.docs[index].data()['message'];
+    bool isSendByMe = snapshot.data.docs[index].data()['sendBy'] ==
+        Constants.localName;
     return Container(
       padding: EdgeInsets.only(
           left: isSendByMe ? 24 : 8, right: isSendByMe ? 8 : 24),
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       margin: EdgeInsets.symmetric(vertical: 4.0),
       alignment: isSendByMe ? Alignment.bottomRight : Alignment.bottomLeft,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         decoration: BoxDecoration(
           color: isSendByMe ? Colors.white12 : Colors.blueGrey,
-          borderRadius: isSendByMe
-              ? BorderRadius.only(
-                  topRight: Radius.circular(20),
-                  topLeft: Radius.circular(20),
-                  bottomLeft: Radius.circular(20))
-              : BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomRight: Radius.circular(20)),
+          borderRadius: getBottomBySender(isSendByMe),
         ),
         child: Text(
           message,
@@ -177,4 +186,16 @@ class MessageTile extends StatelessWidget {
       ),
     );
   }
+}
+
+BorderRadius getBottomBySender(bool isSendByMe) {
+  return isSendByMe
+      ? BorderRadius.only(
+      topRight: Radius.circular(20),
+      topLeft: Radius.circular(20),
+      bottomLeft: Radius.circular(20))
+      : BorderRadius.only(
+      topLeft: Radius.circular(20),
+      topRight: Radius.circular(20),
+      bottomRight: Radius.circular(20));
 }
